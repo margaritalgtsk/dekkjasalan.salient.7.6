@@ -1306,7 +1306,7 @@
 	}
 	
 	.container, div.slider-nav, #post-area.standard-minimal.full-width-content article.post .inner-wrap {
-    	max-width: 300px!important; 
+    	max-width: 365px!important; 
   	} 
 
   	#post-area.standard-minimal .post-author { position: relative;}
@@ -1398,7 +1398,7 @@
 	}
 	
 	.container article.post .post-content {
-		padding-left: 0px!important;
+		/*padding-left: 0px!important;*/
 	}
 	
 	.container article.post .post-header h2  {
@@ -2538,7 +2538,7 @@
 @media only screen and (min-width: 480px) and (max-width: 690px) {
 	
  	body .container, body div.slider-nav, #post-area.standard-minimal.full-width-content article.post .inner-wrap {
-    	max-width: 420px!important; 
+    	max-width: 540px!important; 
   	} 
 
   	#header-outer[data-full-width="true"] header > .container, #header-secondary-outer[data-full-width="true"] > .container {

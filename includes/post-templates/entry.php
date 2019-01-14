@@ -1,6 +1,8 @@
 <?php 
+require_once('aq_resizer.php');
 $options = get_nectar_theme_options(); 
 global $post;
+$additionalDescription = get_post_meta($post->ID, 'additional_description', true);
 
 $masonry_size_pm = get_post_meta($post->ID, '_post_item_masonry_sizing', true); 
 $masonry_item_sizing = (!empty($masonry_size_pm)) ? $masonry_size_pm : 'regular';
@@ -175,7 +177,9 @@ global $layout; ?>
 								}
 
 								?>
-
+								
+								
+								
 								 
 
 							</div><!--article-content-wrap-->
@@ -202,22 +206,26 @@ global $layout; ?>
 						?>
 
 				</div><!--/content-inner-->
-
+				
 
 			<?php }
 
 			//other styles
 			else { ?>
-
+				
 				<div class="content-inner">
 					
 					<?php if( !is_single() && ($using_masonry == true && $masonry_type == 'classic_enhanced') ) { ?> <a class="entire-meta-link" href="<?php the_permalink(); ?>"></a><?php } 
-
+													
 					if ( has_post_thumbnail() ) {
 		 				
 		 				 if( !is_single() ) {
-
-		 				 	if(!($using_masonry == true && $masonry_type == 'classic_enhanced')) echo'<a href="' . get_permalink() . '"><span class="post-featured-img">'.get_the_post_thumbnail($post->ID, $img_size, array('title' => '')) .'</span></a>'; 
+							
+							$featuredSrc = get_the_post_thumbnail_url($post->ID);
+							$feauturedSrc =  aq_resize($featuredSrc,160,120);
+		 				 	if(!($using_masonry == true && $masonry_type == 'classic_enhanced')) echo'<a href="' . get_permalink() . '"><span class="post-featured-img"><img src="'.$feauturedSrc .'" class="attachment-thumbnail size-thumbnail wp-post-image" alt="" title=""></span></a>'; 
+							
+						
 		 				 }
 
 						 global $options;
@@ -293,6 +301,7 @@ global $layout; ?>
 								
 								//excerpt
 								else {
+									
 									echo '<div class="excerpt">';
 									$excerpt_length = (!empty($options['blog_excerpt_length'])) ? intval($options['blog_excerpt_length']) : 15; 
 
@@ -310,6 +319,7 @@ global $layout; ?>
 										}
 
 									} else {
+										
 										the_excerpt();
 									}
 									
@@ -344,11 +354,18 @@ global $layout; ?>
 							}
 						}
 					?>
-						
+					
 				</div><!--/content-inner-->
 
 			<?php } // other styles ?>
-			
+			<br />
+			<div class="addtioonal-description"> <?php echo $additionalDescription;?></div>
+		        <?php if(is_single()){?>	
+                        <div class = "senda">
+			<?php echo do_shortcode('[contact-form-7 id="46201" title="Senda fyrirspurn"]');?>
+                        <div style="clear:both;"></div>
+                        </div>
+                        <?php } ?>
 		</div><!--/post-content-->
 
 	</div><!--/inner-wrap-->

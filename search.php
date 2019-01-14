@@ -35,7 +35,7 @@ jQuery(document).ready(function($){
 		<div class="row">
 			<div class="col span_12">
 				<div class="col span_12 section-title">
-					<h1><?php echo __('Results For', NECTAR_THEME_NAME); ?><span>"<?php echo esc_html( get_search_query( false ) ); ?>"</span></h1>
+					<h1>Niðurstöður fyrir<span>(<?php $allsearch = new WP_Query("s=$s&showposts=0"); echo $allsearch ->found_posts?>)<span> <span>"<?php echo esc_html( get_search_query( false ) ); ?>"</span></h1>
 				</div>
 			</div>
 		</div>
@@ -44,35 +44,86 @@ jQuery(document).ready(function($){
 		
 		<div class="row">
 			
-			<div class="col span_9">
+			<div class="col span_12" id="post-area">
 				
-				<div id="search-results">
+				<div class="posts-container" data-load-animation="none">	
 						
 					<?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 						
 
 							
-							<?php if( get_post_type($post->ID) == 'post' ){ ?>
-								<article class="result">
-									<div class="inner-wrap">
-										<span class="bottom-line"></span>
-										<?php if(has_post_thumbnail( $post->ID )) {	
-											echo '<a href="'.get_permalink().'">'.get_the_post_thumbnail($post->ID, 'full', array('title' => '')).'</a>'; 
-										} ?>
-										<h2 class="title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <span><?php echo __('Blog Post', NECTAR_THEME_NAME); ?></span></h2>
-									</div>
-								</article><!--/search-result-->	
+			<?php if( get_post_type($post->ID) == 'post' ){ ?>
+				<article id="post-<?php echo $post->ID ?>" class="regular post-<?php echo $post->ID ?> post type-post status-publish format-standard has-post-thumbnail hentry category-dekk-felgum">
+					<div class="inner-wrap">
+						<div class="post-content">
+						 
+						 <div class="content-inner">
+						 <?php if(has_post_thumbnail( $post->ID )) {	
+							echo '<a href="'.get_permalink().'"><span class="post-featured-img search-img" >'.get_the_post_thumbnail($post->ID, 'full').'</span></a>'; 
+						} ?>
+										
+							<div class="article-content-wrap">
+							   <div class="post-header">
+								  <h2 class="title">
+									 <a href="<?php the_permalink()?>"><?php the_title(); ?></a> 
+								  </h2>
+								  
+							   </div>
+							   <!--/post-header-->
+							   <div class="excerpt">
+								  <?php if(has_excerpt( $post->ID )){
+									echo the_excerpt();
+								  }else{
+									 the_content();
+								  }?>  
+							   </div>
+							   <div class="addtioonal-description"> <?=get_post_meta($post->ID, 'additional_description', true);?></div>
+							   <a class="more-link" href="<<?php the_permalink()?>">"><span class="continue-reading">Read More</span></a>							
+							</div>
+							<!--article-content-wrap-->
+						 </div>
+						 <!--/content-inner-->
+						</div>
+						<!--/post-content-->
+					</div>
+					<!--/inner-wrap-->
+					</article>
 							<?php }
 							
 							else if( get_post_type($post->ID) == 'page' ){ ?>
-								<article class="result">
-									<div class="inner-wrap">
-										<span class="bottom-line"></span>
-										<h2 class="title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <span><?php echo __('Page', NECTAR_THEME_NAME); ?></span></h2>	
+							
+							<article id="post-<?php echo $post->ID ?>" class="regular post-<?php echo $post->ID ?> post type-post status-publish format-standard has-post-thumbnail hentry category-dekk-felgum">
+					<div class="inner-wrap">
+						<div class="post-content">
+						 
+						 <div class="content-inner">
+						 <?php if(has_post_thumbnail( $post->ID )) {	
+							echo '<a href="'.get_permalink().'"><span class="post-featured-img search-img" >'.get_the_post_thumbnail($post->ID, 'full').'</span></a>'; 
+						} ?>
 										
-										<?php if(has_excerpt()) the_excerpt(); ?>
-									</div>
-								</article><!--/search-result-->	
+							<div class="article-content-wrap">
+							   <div class="post-header">
+								  <h2 class="title">
+									 <a href="<?php the_permalink()?>"><?php the_title(); ?></a> 
+								  </h2>
+								  
+							   </div>
+							   <!--/post-header-->
+							   <div class="excerpt">
+								  <?php echo the_excerpt()?>
+							   </div>
+							   <a class="more-link" href="<<?php the_permalink()?>">"><span class="continue-reading">Read More</span></a>							
+							</div>
+							<!--article-content-wrap-->
+						 </div>
+						 <!--/content-inner-->
+						</div>
+						<!--/post-content-->
+					</div>
+					<!--/inner-wrap-->
+							
+					</article>		
+								
 							<?php }
 							
 							else if( get_post_type($post->ID) == 'portfolio' ){ ?>
@@ -113,7 +164,7 @@ jQuery(document).ready(function($){
 						
 					<?php endwhile; 
 					
-					else: echo "<p>" . __('No results found', NECTAR_THEME_NAME) . "</p>"; endif;?>
+					else: echo "<p> Engar niðurstöður fundust </p>"; endif;?>
 				
 						
 				</div><!--/search-results-->

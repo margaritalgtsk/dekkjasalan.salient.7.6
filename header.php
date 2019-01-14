@@ -1,8 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 
 
 <html <?php language_attributes(); ?> >
 <head>
+
+<?php
+//$tmp_script = '<script>setTimeout(function(){console.log("Test loading of the first script");
+              //var el = document.getElementById("ajax-loading-screen");
+                      //el.style.display = "none";
+                     // }, 3000);</script>';
+//echo $tmp_script; 
+?>
 
 <!-- Meta Tags -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -163,9 +171,20 @@ if($perm_trans != 1 || $perm_trans == 1 && $bg_header == 'false' || $page_full_s
 					
 					<?php if($has_main_menu == 'true' && $mobile_fixed == 'false' && $prependTopNavMobile != '1') { ?>
 						<div class="slide-out-widget-area-toggle mobile-icon std-menu <?php echo $sideWidgetClass; ?>" data-icon-animation="simple-transform">
-							<div> <a id="toggle-nav" href="#sidewidgetarea" class="closed"> <span> <i class="lines-button x2"> <i class="lines"></i> </i> </span> </a> </div> 
+							 <div>
+								 <a id="toggle-nav" href="#sidewidgetarea" class="closed">
+									 <span>										 
+										 <i class="lines-button x2"> 
+											 <i class="lines">
+											 </i>
+										 </i> 
+									 </span> 
+								 </a>
+							 </div> 
        					</div>
 					<?php }
+					
+					
 					
 					if (!empty($options['enable-cart']) && $options['enable-cart'] == '1') { 
 						if ($woocommerce) { ?> 
@@ -174,9 +193,10 @@ if($perm_trans != 1 || $perm_trans == 1 && $bg_header == 'false' || $page_full_s
 						<?php } 
 					} 
 					
+					
 					if($sideWidgetArea == '1') { ?>
 						<div class="slide-out-widget-area-toggle mobile-icon <?php echo $sideWidgetClass; ?>" data-icon-animation="simple-transform">
-							<div> <a href="#sidewidgetarea" class="closed"> <span> <i class="lines-button x2"> <i class="lines"></i> </i> </span> </a> </div> 
+							<div> <a href="#sidewidgetarea" class="closed"> <span> <i class="fa fa-search" aria-hidden="true"></i> <i class="lines-button x2"> <i class="lines"></i> </i> </span> </a> </div> 
        					</div>
 					<?php } ?>
 					
@@ -186,6 +206,7 @@ if($perm_trans != 1 || $perm_trans == 1 && $bg_header == 'false' || $page_full_s
 
 						<?php if($headerFormat != 'menu-left-aligned') { ?>
 							<ul class="buttons" data-user-set-ocm="<?php echo $userSetSideWidgetArea; ?>">
+								<li id="header-phone-container"><div id="header-phone">587 3757</div><li>
 								<li id="search-btn"><div><a href="#searchbox"><span class="icon-salient-search" aria-hidden="true"></span></a></div> </li>
 							
 								<?php if($sideWidgetArea == '1') { ?>
@@ -213,6 +234,8 @@ if($perm_trans != 1 || $perm_trans == 1 && $bg_header == 'false' || $page_full_s
 						</ul>
 						
 					</nav>
+					
+					
 
 					<?php if($headerFormat == 'left-header') echo '</div>'; ?>
 					

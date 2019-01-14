@@ -176,7 +176,7 @@ if($sideWidgetArea == '1') {
 	if($sideWidgetClass == 'fullscreen') echo '</div><!--blurred-wrap-->'; ?>
 
 	<div id="slide-out-widget-area-bg" class="<?php echo $sideWidgetClass . ' '. $sideWidgetOverlayOpacity; ?>"><?php if($sideWidgetClass == 'fullscreen-alt') echo '<div class="bg-inner"></div>';?></div>
-	<div id="slide-out-widget-area" class="<?php echo $sideWidgetClass; ?>" data-back-txt="<?php echo __('Back', NECTAR_THEME_NAME); ?>">
+	<div id="slide-out-widget-area" class="<?php echo $sideWidgetClass; ?>" data-back-txt="Til baka">
 
 		<?php if($sideWidgetClass == 'fullscreen' || $sideWidgetClass == 'fullscreen-alt') echo '<div class="inner-wrap">'; ?>
 
@@ -193,7 +193,7 @@ if($sideWidgetArea == '1') {
 					   <?php 
 					  		////use default top nav menu if ocm is not activated
 					  	     ////but is needed for mobile when the mobile fixed nav is on
-					   		wp_nav_menu( array('theme_location' => 'top_nav', 'container' => '', 'items_wrap' => '%3$s')); 
+					   		wp_nav_menu( array('theme_location' => 'top_nav', 'container' => '', 'items_wrap' => '%3$s'));
 					   ?>
 		
 					</ul>
@@ -289,6 +289,6 @@ if($body_border == '1') {
 } 
 
 wp_footer(); ?>	
-
+<a href="http://felgusalan.is/"><div class="hide-on-desktop footer-felgusalan-banner"></div></a>
 </body>
 </html>

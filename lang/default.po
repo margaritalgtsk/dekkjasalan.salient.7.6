@@ -549,7 +549,7 @@ msgstr ""
 
 #: ../functions.php:3891
 msgid "Category"
-msgstr ""
+msgstr "Voruflokkar"
 
 #: ../functions.php:3896
 msgid "Tag"
@@ -640,11 +640,11 @@ msgstr ""
 
 #: ../searchform.php:3
 msgid "Search..."
-msgstr ""
+msgstr "Leita"
 
 #: ../searchform.php:3
 msgid "Search for:"
-msgstr ""
+msgstr "Leita á vef"
 
 # @ default
 #: ../searchform.php:5

@@ -17,6 +17,11 @@ function lang_setup(){
 	
 }
 
+function wpbp_remove_schedule_delete() {
+    remove_action( 'wp_scheduled_delete', 'wp_scheduled_delete' );
+}
+add_action( 'init', 'wpbp_remove_schedule_delete' );
+
 #-----------------------------------------------------------------#
 # Register/Enqueue JS
 #-----------------------------------------------------------------#
@@ -59,11 +64,17 @@ function nectar_register_js() {
 		wp_register_script('owl_carousel', get_template_directory_uri() . '/js/owl.carousel.min.js', 'jquery', '1.3.3', TRUE);
 		wp_register_script('midnight', get_template_directory_uri() . '/js/midnight.js', 'jquery', '1.0', TRUE);
 		wp_register_script('twentytwenty', get_template_directory_uri() . '/js/jquery.twentytwenty.js', 'jquery', '1.0', TRUE);
+		
+		wp_enqueue_script('tabella', get_template_directory_uri() . '/js/responsive-tables.js');
+		
 
 		if ( floatval(get_bloginfo('version')) < "3.6" ) {
 			wp_register_script('jplayer', $nectar_get_template_directory_uri . '/js/jplayer.min.js', 'jquery', '2.1', TRUE);
 		}
 		wp_register_script('nectarFrontend', get_template_directory_uri() . '/js/init.js', array('jquery', 'superfish'), '7.6', TRUE);
+		
+		
+		
 		
 		// Dequeue
 		$lightbox_script = (!empty($options['lightbox_script'])) ? $options['lightbox_script'] : 'pretty_photo';
@@ -156,6 +167,7 @@ function nectar_register_js() {
 }
 
 add_action('wp_enqueue_scripts', 'nectar_register_js');
+
 
 
 
@@ -311,6 +323,7 @@ function nectar_main_styles() {
 		 wp_register_style("skin-ascend", get_template_directory_uri() . "/css/ascend.css", '', '7.6');
 		 wp_register_style("box-roll", get_template_directory_uri() . "/css/box-roll.css");
 		 wp_register_style("nectar-ie8", get_template_directory_uri() . "/css/ie8.css");
+		 wp_enqueue_style("tabella", get_template_directory_uri() . "/css/responsive-tables.css");
 
 		 
 		 global $options;
@@ -1394,8 +1407,9 @@ add_filter('the_content_more_link', 'remove_more_jump_link');
 
 
 if(!function_exists('nectar_auto_gallery_lightbox')){
+	
 	function nectar_auto_gallery_lightbox($content){
-		
+			
 		preg_match_all('/<a(.*?)href=(?:\'|")([^<]*?).(bmp|gif|jpeg|jpg|png)(?:\'|")(.*?)>/i', $content, $links);
 		if(isset($links[0])) {
 			$rel_hash = '[gallery-'.wp_generate_password(4, FALSE, FALSE).']';
@@ -4420,7 +4434,7 @@ if ( !function_exists( 'nectar_page_header' ) ) {
 			} else if(is_category()) {
 
 				$heading =  single_cat_title( '', false );
-				$subtitle = __('Category', NECTAR_THEME_NAME );
+				$subtitle = "Voruflokkar";//__('Category', NECTAR_THEME_NAME );
 
 			} else if(is_tag()) {
 
@@ -5286,6 +5300,277 @@ $using_jetpack_publicize = ( class_exists( 'Jetpack' ) && in_array( 'publicize',
 if ( !defined('WPSEO_VERSION') && !class_exists('NY_OG_Admin') && !class_exists('Wpsso') && $using_jetpack_publicize == false) {
 	add_action( 'wp_head', 'add_opengraph', 5 );
 }
+
+add_action('add_meta_boxes', 'my_extra_fields', 1);
+
+function my_extra_fields() {
+	add_meta_box( 'extra_fields', 'Extra fields', 'extra_fields_box_func', 'post', 'normal', 'high'  );
+}
+
+function extra_fields_box_func( $post ){
+?>
+
+	<p>Additional text:
+		<textarea type="text" name="extra[additional_description]" style="width:100%;height:50px;"><?php echo get_post_meta($post->ID, 'additional_description', 1); ?></textarea>
+	</p>
+	<p style="display:none">Search field:
+		<textarea type="text" name="extra[search_field]" style="width:100%;height:50px;"><?php echo get_post_meta($post->ID, 'search_field', 1); ?></textarea>
+	</p>
+
+	<input type="hidden" name="extra_fields_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>" />
+<?php
+}
+
+
+add_action('save_post', 'my_extra_fields_update', 0);
+
+
+function my_extra_fields_update( $post_id ){
+	
+	/*if ( ! wp_verify_nonce($_POST['extra_fields_nonce'], __FILE__) ) return false; 
+	if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE  ) return false; 
+	if ( !current_user_can('edit_post', $post_id) ) return false; */
+	$post = get_post($post_id);
+	
+	if( !isset($_POST['extra']) ) return false; 
+	
+	/*require_once( ABSPATH . '/phpQuery/phpQuery.php');
+	
+	  if(strstr($post->post_content,'</table>')) {
+
+        $html = phpQuery::newDocument($post->post_content);
+        $pq = pq($html);
+
+        $tableHtmlTr = $pq->find('table tr');
+        $tableHtmlTr = pq($tableHtmlTr);
+        $rowCount =  count($tableHtmlTr->elements);
+
+        $tableHtml = $pq->find('table td');
+        $tableHtml = pq($tableHtml);
+        $tdArray = $tableHtml->elements;
+        $tdCount = count($tdArray);
+        $resultsTable = array();
+        $tableRow=0;
+        $lastCell = $tdCount/$rowCount;
+		$text =''; 
+		
+        foreach($tdArray as $key=>$td){
+
+            if($key>$lastCell-1){
+                if($key%$lastCell==0 || $key%$lastCell==3) {
+                    if(empty($resultsTable[$tableRow])) $resultsTable[$tableRow] = array();
+                    $resultsTable[$tableRow][] = $td->nodeValue;
+                    if($key%$lastCell==3) $tableRow++;
+
+                }
+
+            }
+
+        }
+		
+		foreach($resultsTable as $str){
+			
+			$text.=' '.implode(' ',$str);	
+			$text.=' '.implode(' ',array_reverse($str));
+			
+		}
+       
+       
+        $_POST['extra']['search_field'] =  $text;
+        
+
+    }*/
+	
+	
+	$_POST['extra'] = array_map('trim', $_POST['extra']); 
+	foreach( $_POST['extra'] as $key=>$value ){
+		if( empty($value) ){
+			delete_post_meta($post_id, $key); 
+			continue;
+		}
+
+		update_post_meta($post_id, $key, $value); 
+	}
+	
+	return $post_id;
+}
+
+remove_filter( 'the_content', 'easy_image_gallery_append_to_content' );
+
+function easy_image_gallery_prepend_to_content( $content ) {
+
+	if ( is_singular() && is_main_query() && easy_image_gallery_allowed_post_type() ) {
+		
+		$new_content = easy_image_gallery();
+		$content = '<div class="gallery-container">'.$new_content.'</div>'.$content;
+		$content = str_replace('</a>','<div class="magnifer"></div></a>',$content);
+		
+	}
+	
+	
+	return $content;
+
+}
+add_filter('the_content', 'easy_image_gallery_prepend_to_content');
+
+function my_modify_main_query( $query ) {
+	
+	if ( $query->is_main_query() && !is_admin()) { 
+
+		$query->query_vars['order'] = 'ASC'; 
+		$query->query_vars['orderby'] = 'title'; 
+		
+
+	}
+	
+	if($query->is_main_query() &&  is_search()){
+	
+		$query->query_vars['posts_per_page'] = 5000;
+				
+	}
+	
+	if ($query->is_search) {
+		$query->query_vars['order'] = 'ASC'; 
+		$query->query_vars['orderby'] = 'title'; 
+				
+        $query->query_vars['s'] = str_replace(array('x','"'),array('×','″'),$query->query_vars['s']);
+		$query->query_vars['s'] = ltrim($query->query_vars['s'],'\″');
+		
+    };
+	
+}
+
+add_action( 'pre_get_posts', 'my_modify_main_query');
+
+
+
+
+
+function auto_post_attach($post_id){
+	
+	$attachment_ids = get_post_meta($post_id, '_easy_image_gallery', true);
+	
+	if(!empty($attachment_ids)){
+		if(strstr($attachment_ids,',')){
+		
+			$attachId = array_shift(explode(',',$attachment_ids));
+		
+		}else{
+		
+			$attachId = $attachment_ids;		
+			
+		}
+		
+	}
+	
+	
+	set_post_thumbnail( $post_id, $attachId );
+	
+}
+
+add_action('save_post', 'auto_post_attach');
+
+
+function cf_search_join( $join ) {
+    global $wpdb;
+
+    if ( is_search() ) {    
+        $join .=' LEFT JOIN '.$wpdb->postmeta. ' ON '. $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
+    }
+    
+    return $join;
+}
+add_filter('posts_join', 'cf_search_join' );
+
+
+function cf_search_where($where) {
+	
+    global $wpdb;
+	
+    if ( is_search() ) {
+		
+        $where = preg_replace(
+            "/\(\s*".$wpdb->posts.".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+            "(".$wpdb->posts.".post_title LIKE $1) OR (".$wpdb->postmeta.".meta_value LIKE $1)", $where );
+			
+			
+		$searchQuery = get_search_query();
+		$addWhere = '';
+		
+		if(strstr($searchQuery,' ')){
+			
+			$searchQuery = explode(' ',$searchQuery);
+			
+			foreach($searchQuery as $sQuery){
+				
+				$searchQuery.=" AND (wp_postmeta.meta_value LIKE '%".$sQueryf."%')";
+				
+			}
+			
+		}else{
+			
+			$addWhere = "";
+		
+		}
+		
+		$where.=$addWhere;
+		
+		$where = str_replace(array('×','″'),array('x','"'),$where);
+		
+		
+		
+    }
+	
+    return $where;
+	
+}
+add_filter( 'posts_where', 'cf_search_where' );
+
+/**
+ * Prevent duplicates
+ *
+ */
+ 
+function cf_search_distinct( $where ) {
+    global $wpdb;
+
+    if ( is_search() ) {
+        return "DISTINCT";
+    }
+
+    return $where;
+}
+add_filter( 'posts_distinct', 'cf_search_distinct' );
+
+function fb_change_search_url_rewrite() {
+	if (is_search() && ! empty($_GET['s'])) {
+		wp_redirect(str_replace(array('%2F'),array('/'),home_url("/search/") . urlencode( get_query_var( 's' ))));
+		exit();
+	}	
+}
+add_action( 'template_redirect', 'fb_change_search_url_rewrite' );
+
+
+function disable_wp_emojicons() {
+
+  // all actions related to emojis
+  remove_action( 'admin_print_styles', 'print_emoji_styles' );
+  remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+  remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+  remove_action( 'wp_print_styles', 'print_emoji_styles' );
+  remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+  remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+  remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+
+  // filter to remove TinyMCE emojis
+  add_filter( 'tiny_mce_plugins', 'disable_emojicons_tinymce' );
+}
+//add_action( 'init', 'disable_wp_emojicons' );
+
+add_filter( 'emoji_svg_url', '__return_false' );
+
+
+
 
 
 
